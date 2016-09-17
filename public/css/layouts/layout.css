@@ -1,0 +1,120 @@
+body { 
+    background-color: #f4f4f4; 
+    padding-top: 50px;
+    /*
+    margin: 0px; 
+    padding: 0px; 
+    width: 100%; 
+    min-width: 1000px; 
+    background-color: rgb(142, 183, 218); 
+    font-family: "Lucida Grande","Lucida Sans Unicode","Trebuchet MS", Verdana, Helvetica, sans-serif; 
+    color: rgb(51, 51, 51); 
+    text-align: center; 
+    */
+}
+
+#nav.navbar {
+    background-color: #358ab9;
+}
+
+#nav .navbar-text {
+    color: #ffffff;
+}
+
+#nav.navbar a {
+    color: #ffffff;
+}
+
+#nav ul.dropdown-menu a {
+    color: #000000;
+}
+
+#nav li.open a {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+a {
+    color: rgb(107, 152, 191);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#header-top { 
+    height: 200px; 
+    width: 100%; 
+    margin: 0px; 
+    border: 1px;
+    padding: 120px 0px 0px 160px; 
+    text-align: left; 
+    background: url('/images/bg.jpg') no-repeat /*scroll left top*/; 
+    /*
+    height: 190px; 
+    width: 100%; 
+    margin: 0px; 
+    border: 1px;
+    padding: 120px 0px 0px 160px; 
+    background: rgb(142, 183, 218) url('/images/bg.jpg') no-repeat scroll left top; 
+    text-align: left; 
+    */
+}
+
+#header-top a { 
+    font-weight: bold;
+    font-size: 30px; 
+    color: rgb(255, 255, 255); 
+    text-decoration: none;
+}
+
+.box {
+    /*border: 1px solid rgb(156, 192, 222);*/
+    border: 1px solid #bebebe;
+    background: white;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    padding: 12px;
+    /*
+    border-radius: 5px;
+    margin: 7px;
+    padding: 12px;
+    border: 10px solid rgb(156, 192, 222);
+    background: white;
+    border-radius: 15px;
+    text-align: left;
+    */
+}
+
+.smallbox {
+    margin: 7px;
+    padding: 7px;
+    border: 7px solid rgb(156, 192, 222);
+    background: white;
+    border-radius: 15px;
+    font-size: 90%;
+    text-align: left;
+}
+
+.greybox {
+    margin: 7px;
+    padding: 15px;
+    border: 7px solid rgb(156, 192, 222);
+    background: rgb(107, 152, 191);
+    border-radius: 15px;
+    color: white;
+    font-size: 90%;
+    text-align: left;
+}
+
+h1 {
+    margin: 30px 0px;
+    font-weight: bold;
+}
+
+.jn-title {
+    margin: 20px 0px;
+    padding: 5px;
+    background-color: rgb(107, 152, 191);
+    color: white;
+}
+
+

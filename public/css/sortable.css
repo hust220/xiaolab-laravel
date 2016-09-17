@@ -1,0 +1,30 @@
+.sortable tr th, .sortable tr td {
+    text-align: center;
+}
+
+.sort-direct {
+    float: right;
+    margin-left: 4px;
+    width: 8px;
+}
+
+.up-direct {
+    float: left;
+    margin-bottom: 1px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 8px solid #D0D0D0;
+}
+
+.down-direct {
+    float: left;
+    margin-top: 1px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 8px solid #D0D0D0;
+}
+

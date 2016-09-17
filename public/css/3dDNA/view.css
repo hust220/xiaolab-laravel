@@ -1,0 +1,25 @@
+#panel {
+    height: 520px;
+}
+#show-panel {
+    margin: 10px;
+    float: left;
+}
+#inf-panel {
+    margin: 10px;
+    float: left;
+}
+#inf-panel table tr td {
+    padding: 10px;
+    display: block;
+    float: left;
+    width:350px;
+    *width:180px;
+    word-wrap:break-word;
+    word-break:break-all;
+}
+#inf-panel table tr td:first-child {
+    width:150px;
+    font-weight: bold;
+}
+

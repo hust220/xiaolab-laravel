@@ -1,0 +1,29 @@
+.result {
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    border-collapse: collapse;
+}
+.result tr td, .result tr th {
+    padding: 5px;
+}
+/*
+.job_info {
+    border: 2px solid;
+    border-collapse: collapse;
+}
+.job_info tr td {
+    border: 2px solid;
+    white-space: nowrap;
+    width: 400px;
+    max-width: 700px;
+    padding-left: 3px;
+    display: block
+    float: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.job_info tr td:first-child {
+    width: 120px;
+}
+*/

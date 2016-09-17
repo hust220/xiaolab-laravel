@@ -1,0 +1,25 @@
+ul.tab {
+    margin: 10px 0px;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    list-style-type: none;
+    width: 100%;
+}
+ul.tab:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+ul.tab li {
+    margin: 0px;
+    padding: 5px;
+/*    border-radius: 3px; */
+    float: left;
+    cursor: pointer;
+}
+
+
+
+
+

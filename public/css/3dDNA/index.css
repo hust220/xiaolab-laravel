@@ -1,0 +1,21 @@
+#a-advanced-options {
+    cursor: pointer;
+}
+
+textarea {
+    word-break: break-all;
+}
+
+table tr td {
+    padding: 3px 3px;
+}
+
+.align-top {
+    vertical-align:top;
+}
+
+
+
+
+
+

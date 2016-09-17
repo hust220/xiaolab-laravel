@@ -1,0 +1,9 @@
+.result {
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    border-collapse: collapse;
+}
+.result tr td, .result tr th {
+    padding: 5px;
+}
