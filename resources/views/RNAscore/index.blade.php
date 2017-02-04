@@ -3,7 +3,7 @@
 @section('title', '3dRNAscore')
 
 @section('header-top')
-    <a id="title" href="/3dRNA">3dRNAscore: Evaluation of RNA 3D structures</a>
+    <a id="title" href="/3dRNAscore">3dRNAscore: Evaluation of RNA 3D structures</a>
 @endsection
 
 @section('head') @parent

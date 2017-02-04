@@ -52,6 +52,20 @@ return [
             'prefix'   => '',
         ],
 
+
+         'hyy' => [
+            'driver'    => 'mysql',
+            'host'      => env('DB_HOST', 'biophy.hust.edu.cn'),
+            'database'  => '3drpc',
+            'username'  => env('DB_USERNAME', 'jian'),
+            'password'  => env('DB_PASSWORD', '31j0n8i0a1'),
+            'charset'   => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+        ],
+
+
         'mysql' => [
             'driver'    => 'mysql',
             'host'      => env('DB_HOST', 'biophy.hust.edu.cn'),

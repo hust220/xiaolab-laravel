@@ -93,3 +93,7 @@ function jian_interval_when(interval, done, foo) {
     }
 }
 
+function jian_local_time(nS) {     
+   return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');     
+}
+

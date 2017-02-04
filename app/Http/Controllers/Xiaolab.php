@@ -19,5 +19,13 @@ class Xiaolab extends Controller {
         return view('publications', inf_visit($request));
     }
 
+    public function links(Request $request) {
+        return view('links', inf_visit($request));
+    }
+
+    public function tools(Request $request) {
+        return view('tools', inf_visit($request));
+    }
+
 }
 

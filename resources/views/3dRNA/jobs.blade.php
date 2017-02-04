@@ -32,7 +32,7 @@
                                         @if ($item == "submit_time" or $item == "done_time")
                                             <td type='time'>{{$array[$item]}}</td>
                                         @elseif ($item == "num")
-                                            <td><a href='{{"/3dRNA/result/$array[$item]"}}'>{{$array[$item]}}</a></td>
+                                            <td><a target="_blank" href='{{"/3dRNA/result/$array[$item]"}}'>{{$array[$item]}}</a></td>
                                         @else
                                             <td>{{$array[$item]}}</td>
                                         @endif

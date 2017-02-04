@@ -8,18 +8,14 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+require_once("utils.php");
+
 class CADNAS extends Controller {
 //    const WORK_PATH = "/home/wangjian/server/nsp-server/";
 //    const RESULT_PATH = "/home/wangjian/server/nsp-server/results/";
 
-    function inf_visit() {
-        $num_users = DB::table('jobs')->count('ip');
-        $num_visitors = DB::table('visitors')->count('id');
-        return ['num_users'=>$num_users, 'num_visitors'=>$num_visitors];
-    }
-
     public function show(Request $request) {
-        return view('CADNAS.show', $this->inf_visit());
+        return view('CADNAS.show', inf_visit($request));
     }
 
     public function submit(Request $request) {

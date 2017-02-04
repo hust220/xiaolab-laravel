@@ -10,19 +10,21 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Validator;
 
 require_once("utils.php");
+require_once("jntask.php");
 
 class RNA3D extends Controller {
     const WORK_PATH = "/home/wangjian/server/nsp-server/";
     const RESULT_PATH = self::WORK_PATH."results/";
     const LOG_PATH = self::WORK_PATH."logs/";
     const UPLOAD_PATH = "/home/wangjian/upload/";
+    const PAPER_PATH = "/var/www/xiao-lab/public/download/";
 
     public function assemble(Request $request) {
-        return $this->base($request, "assemble");
+        return $this->base($request, "nat_struct");
     }
 
     public function dg(Request $request) {
-        return $this->base($request, "dg");
+        return $this->base($request, "DG");
     }
 
     public function dna(Request $request) {
@@ -48,21 +50,28 @@ class RNA3D extends Controller {
     public function submit(Request $request) {
         $input = $request->all(); 
         $check_result = $this->check_input($input);
+//        $num_running_tasks = DB::table('jobs')->where('ip', '=', $request->ip())->where('state', '<>', '')->where('state', '<>', 'finished')->count();
         if (count($check_result) != 0) {
             return response()->json(["status"=>"failed", "errors"=>$check_result], 420);
+//        } else if ($num_running_tasks >= 10) {
+//            return response()->json(["status"=>"failed", "errors"=>["tasks"=>"You already have $num_running_tasks tasks running! Please wait for the number of your running tasks being less than 10!"]], 420);
         } else {
             $job = rand(1, 999999999);
             $input['job'] = $job;
             $input['ip'] = $request->ip();
-
-            $this->save_task($input);
             $this->pred_3d($input);
+            $this->save_task($input);
             return response()->json(["status"=>"ok", "task_id"=>$job], 200);
         }
     }
 
     public function monitor(Request $request, $job) {
         return response()->json($this->task_state($job), 200);
+    }
+
+    public function running_tasks(Request $request, $ip) {
+        $result = DB::table('jobs')->where('ip', $ip)->where('inf', '<>', '')->get();
+        return response()->json($result, 200);
     }
 
     public function redo(Request $request, $job) {
@@ -72,36 +81,26 @@ class RNA3D extends Controller {
         return $this->result($request, $job);
     }
 
-    public function jobs(Request $request) {
+    public function query(Request $request) {
         $input = $request->all();
-        $input['ip'] = $request->ip();
-        $items = ["num", "email", "ip", "submit_time"];
-        $names = ["num" => "Job ID", "email" => "Email", "ip" => "IP", 
-                  "submit_time" => "Submit Time"];
-        $query = $request->input('query');
-        $query_sql = DB::table('jobs')->select('num', 'email', 'ip', 'submit_time');
-        if (!is_null($query)) {
-            if (preg_match('/^\d+$/', $query)) {
-                $query_sql = $query_sql->where('num', $query);
-            } else if (preg_match('/^.+@.+$/', $query)) {
-                $query_sql = $query_sql->where('email', $query);
-            } else if (preg_match('/^\d+\.\d+\.\d+\.\d+$/', $query)) {
-                $query_sql = $query_sql->where('ip', $query);
-                $items = ["num", "email", "ip", "submit_time"];
-            } else if (preg_match('/^all$/', $query)){
-                $items = ["num", "email", "ip", "submit_time"];
-            } else {
-                $items = [];
-                return view('3dRNA/jobs', inf_visit($request));
-            }
+        if (!isset($input['query']) || $input['query'] == '') return response()->json(['errors'=>['Please input the content of your query!']], 420);
+        $content = $input['query'];
+        $result = '';
+        $sql = DB::table('jobs')->where('inf', '<>', '');
+        if (is_ip($content)) {
+            $result = $sql->where('ip', $content)->get();
+        } else if (is_email($content)) {
+            $result = $sql->where('email', $content)->get();
+        } else if (is_num($content)) {
+            $result = $sql->where('num', $content)->get();
+        } else if ($content == "all") {
+            $result = $sql->select('num', 'ip', 'email', 'submit_time', 'state')->get();
         }
-        $query_result = $query_sql->orderBy('id', 'desc')->get();
-        $result = [];
-        foreach ($query_result as $line) {
-            $result[] = ['num'=>($line->num), 'email'=>($line->email), 'ip'=>($line->ip),
-                         'submit_time'=>($line->submit_time)];
+        if ($result == '' || count($result) == 0) {
+            return response()->json(['errors'=>['Not Found!']], 420);
+        } else {
+            return response()->json(['results'=>$result], 200);
         }
-        return view('3dRNA/jobs', inf_visit($request) + ['names'=>$names, 'items'=>$items, 'result'=>$result]);
     }
 
     public function result(Request $request, $job) {
@@ -127,19 +126,38 @@ class RNA3D extends Controller {
         return response()->download($addr);
     }
 
+    public function test(Request $request, $paper, $set, $item, $test_type) {
+        $state = [];
+        $state["ss"] = file(self::PAPER_PATH.$paper."/".$set."/".$item.".ss", FILE_IGNORE_NEW_LINES)[0];
+        if (strpos($test_type, "a")!==false) {
+            $state["seq"] = file(self::PAPER_PATH.$paper."/".$set."/".$item.".seq", FILE_IGNORE_NEW_LINES)[0];
+        } else {
+            $handle = fopen(self::PAPER_PATH.$paper."/".$set."/".$item.".pdb", 'r');
+            $state["init_struct"] = stream_get_contents($handle);
+            fclose($handle);
+        }
+        if (strpos($test_type, "c")!==false) {
+            $state["constraints"] = implode("\n", file(self::PAPER_PATH.$paper."/".$set."/".$item.".rm_fp.di", FILE_IGNORE_NEW_LINES));
+        }
+        $state["task_type"] = str_replace("c", "", $test_type);
+        return view('3dRNA.index', inf_visit($request) + ['method' => 'nat_struct', 'ip'=>$request->ip(), 'init_state'=>json_encode($state)]);
+    }
+
     public function download(Request $request, $job, $num) {
         $addr = self::RESULT_PATH.$job.'/';
         if ($num == "all") {
             $addr .= $job.'.tar.gz';
-        } else $addr .= $job.'.3drna.'.$num.".pdb";
+        } else $addr .= $job.'.'.$num.".pred.pdb";
         return response()->download($addr);
     }
 
     function pred_3d($info) {
         $this->save_constraints($info);
         $this->save_job_info($info);
-        $command = 'bash /home/wangjian/server/nsp-server/submit.sh '.$info['job'].' >/dev/null 2>&1 &';
-        system($command);
+        #$command = 'bash /home/wangjian/server/nsp-server/submit.sh '.$info['job'].' >/dev/null 2>&1 &';
+        #system($command);
+        $command = 'bash /home/wangjian/server/nsp-server/submit.sh '.$info['job'];
+        return jntask($command);
     }
 
     function task_result($job) {
@@ -149,21 +167,16 @@ class RNA3D extends Controller {
         $pars += $this->task_state($job);
         if ($pars["state"] == "finished") {
             $pars['scores'] = $this->get_column_file("$result_path/scores.txt", 1);
-        } /*else {
-            $log_file = self::LOG_PATH.$job.".log";
-            if (file_exists($log_file)) {
-                $pars['status'] = implode("<br>", file($log_file));
-            }
-        }*/
+        }
         return $pars + $result;
     }
 
     function base(Request $request, $method) {
-        return view('3dRNA.index')->with(inf_visit($request) + ['method' => $method]);
+        return view('3dRNA.index')->with(inf_visit($request) + ['method' => $method, 'ip'=>$request->ip()]);
     }
 
     function save_constraints($info) {
-        if ($info['constraints'] != '') {
+        if (array_key_exists('constraints', $info) && $info['constraints'] != '') {
             $arr = preg_split("/\s+/", trim($info['constraints']));
             $f = fopen(self::WORK_PATH."jobs/".$info['job'].".constraints", 'w');
             for ($i = 0; $i < count($arr); $i += 2) {
@@ -172,6 +185,15 @@ class RNA3D extends Controller {
                 fwrite($f, $arr[$i+1]);
                 fwrite($f, "\n");
             }
+            fclose($f);
+        }
+    }
+
+    function save_init_struct($info) {
+        if (array_key_exists('init_struct', $info) && $info['init_struct'] != '') {
+            $arr = preg_split("/\s+/", trim($info['constraints']));
+            $f = fopen(self::WORK_PATH."jobs/".$info['job'].".init.pdb", 'w');
+            fwrite($f, $info['init_struct']);
             fclose($f);
         }
     }
@@ -205,10 +227,19 @@ class RNA3D extends Controller {
         );
     }
 
+    function jian(Request $request) {
+        DB::connection('hyy')->insert(
+            'insert into jobs(num) values(?)', [11]
+        );
+        $result = DB::connection('hyy')->select("select * from test");
+        dd($result);
+        return 'hi';
+    }
+
     function check_input($input) {
         $result = [];
-        foreach (["seq", "ss", "num", "num_sampling", "seed"] as $el) {
-            if ($input[$el] == "") {
+        foreach (["seq", "ss"] as $el) {
+            if (!isset($input[$el]) || $input[$el] == "") {
                 $result[$el] = "The $el field is required";
                 return $result;
             }
